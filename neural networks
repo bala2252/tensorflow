@@ -1,0 +1,53 @@
+This document explains how to use machine learning to predict future buying behaviour of product items by a customer.
+A feature column is a data structure that tells your model how to interpret the data in each feature.
+Think of feature columns as the intermediaries between raw data and Estimators. Feature columns are very rich, enabling you to 
+transform a diverse range of raw data into formats that Estimators can use, allowing easy experimentation.
+
+we want the model to interpret the data in each feature as purchace item value.
+Select the type of model
+We need the select the kind of model that will be trained. Lots of model types exist; 
+picking the ideal type takes experience. We've selected a neural network to solve the problem. 
+Neural networks can find complex relationships between features and the label. 
+A neural network is a highly-structured graph, organized into one or more hidden layers. 
+Each hidden layer consists of one or more neurons. There are several categories of neural networks. 
+We'll be using a fully connected neural network, which means that the neurons in one layer take inputs from every neuron in the previous layer.
+For example, the following figure illustrates a fully connected neural network consisting of three hidden layers:
+
+The first hidden layer contains four neurons.
+The second hidden layer contains three neurons.
+The third hidden layer contains two neurons.
+
+To specify a model type, instantiate an Estimator class. TensorFlow provides two categories of Estimators:
+
+pre-made Estimators, which someone else has already written for you.
+custom Estimators, which you must code yourself, at least partially.
+To implement a neural network, the premade_estimators.py program uses a pre-made Estimator named tf.estimator.DNNClassifier. This Estimator builds a neural network that classifies examples. The following call instantiates DNNClassifier:
+
+    classifier = tf.estimator.DNNClassifier(
+        feature_columns=my_feature_columns,
+        hidden_units=[10, 10],
+        n_classes=3)
+        
+        Train the model
+Instantiating a tf.Estimator.DNNClassifier creates a framework for learning the model. Basically, we've wired a network but haven't yet let data flow through it. To train the neural network, call the Estimator object's train method. For example:
+
+    classifier.train(
+        input_fn=lambda:train_input_fn(train_feature, train_label, args.batch_size),
+        steps=args.train_steps)
+        
+        Evaluate the model
+Evaluating means determining how effectively the model makes predictions. 
+To determine the Iris classification model's effectiveness,
+# Evaluate the model.
+eval_result = classifier.evaluate(
+    input_fn=lambda:eval_input_fn(test_x, test_y, args.batch_size))
+
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
+
+Predicting
+We've now trained a model and "proven" that it is good--but not perfect--at classifying the items.
+
+Every Estimator provides a predict method, which premade_estimator.py calls as follows:
+
+predictions = classifier.predict(
+    input_fn=lambda:eval_input_fn(predict_x, batch_size=args.batch_size))
